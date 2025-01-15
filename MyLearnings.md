@@ -30,5 +30,6 @@ Bcrypt password Hashing- for password encryption
 
 deployment
 
+Express & MongoDB setup performed today
 
 
