@@ -1,6 +1,10 @@
 const express = require('express');  //bring express just to get a very simple express server up and running
+const connectDB = require('./config/db')  //bring connectDB here
 
 const app = express();  //initialize app var with express
+
+//Connect Database
+connectDB();
 
 app.get('/', (req, res) => res.send('API Running'));  //create a single endpoint to test
            //res.send:-send data to browser
