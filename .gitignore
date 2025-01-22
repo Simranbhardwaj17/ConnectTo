@@ -1,0 +1,6 @@
+node_modules/            
+
+
+
+
+//coz we don't want the node_modules folder the dependencies to get addded to the repo
