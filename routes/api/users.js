@@ -1,14 +1,74 @@
 const express = require('express');  
-const router = express.Router();     
+const router = express.Router(); 
+const gravatar = require('gravatar');
+const bcrypt = require('bcryptjs');
+const { check, validationResult } = require('express-validator');
+//check,.. comes from  ..        read doc exp-validator
 
-// @route     GET api/users
-// @desc      Test route
+const User = require('../../models/User');        //gonna up two levels into models
+
+// @route     POST api/users
+// @desc      Register user
 // @access    Public                     @access value whether pub or pvt
-router.get('/', (req, res) => res.send('User route'));  //its just a test route
-         //for user reg replace'/' to '/register'
+router.post(
+    '/',
+    [
+        check('name', 'Name is required').not().isEmpty(),
+        check('email', 'Please include a valid email').isEmail(),
+        check('password', 'Please enter a password with 6 or more characters').isLength({min: 6})
+    ],
+    async (req, res) => {
+        // console.log(req.body);   //req.body: that's the obj of data sent to this route, in order for this to work,initialize middlewres for body parser
+       const errors = validationResult(req);
+       if(!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+       }
+
+       const { name, email, password } = req.body;
+
+       try {
+        //See if user exists(send error, can't send multipe emails for same)      findOne:takes a field that u wanted to search by 
+        let user = await User.findOne({email});
+
+        if (user) {
+            return res.status(400).json({ errors: [{ msg: ' User alredy exists'}] });  //we want to match the above err(i/p err) with existing user
+        }
+        //Get user gravator url
+        const avatar = gravatar.url(email, {
+            s: '200',            //default size, string:200
+            r: 'pg',             //can't have any naked ppl or anything
+            d: 'mm'              //def img like a user icon(need something there even if the user doesn't have gravatar)
+        })
+
+        //create instance of user & pass in an obj with fields we want
+        user = new User({      //call user.save to save it to B
+            name, 
+            email,
+            avatar,
+            password
+        });
+
+        //Encrypt passw
+        const salt = await bcrypt.genSalt(10);                  //create a var cld salt to do hashing width   
+        
+        //create hash
+        user.password = await bcrypt.hash(password, salt);      //bcrypt.hash(): it takes plain text passw, 7 salt
+
+        //Return jsonwebtoken  coz in FE, when a user reg, want them to logged in ri8 away,so u need that token
+
+        res.send('User registered');
+       }
+       catch(err) {
+        console.log(err.message);
+        res.status(500).send('Server error');
+       }
+    }
+);  
 
 //export router
 module.exports = router;  
 
 //if do post to api/users, it will create new user
-//get help to get the users
+//GET help to get the users
+//now we wanna be able to send data to this route, need to send name,passw in the email to reg a user
+//u used to have to i body parser as a pkg, but now its included with exp
