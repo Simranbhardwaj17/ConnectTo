@@ -26,8 +26,8 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-module.exports = User = mongoose.model('User', 'UserSchema')
-// mongoose.model('modelName', 'Schema')
+module.exports = User = mongoose.model('User', UserSchema);
+// mongoose.model('modelName', Schema)
 
 //Gravatar: allows u to attach a pfp img to ur email(I want to be this in user model so that its always accessible coz at 1st reg, it create user not pfp, have to go through process to create pfp)
 
