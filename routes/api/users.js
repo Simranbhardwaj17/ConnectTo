@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router(); 
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Load environment variables
 const { check, validationResult } = require('express-validator');
 //check,.. comes from  ..        read doc exp-validator
 
@@ -51,14 +53,31 @@ router.post(
         //Encrypt passw
         const salt = await bcrypt.genSalt(10);                  //create a var cld salt to do hashing width   
         
-        //create hash
+        //create hash(hash the passw)
         user.password = await bcrypt.hash(password, salt);      //bcrypt.hash(): it takes plain text passw, 7 salt
+
+        await user.save();    //this give promise(user get saved to DB)
 
         //Return jsonwebtoken  coz in FE, when a user reg, want them to logged in ri8 away,so u need that token
 
-        res.send('User registered');
-       }
-       catch(err) {
+        //create payload
+        const payload = {
+            user: {
+                id: user.id     //mongoose use abstraction (.id as obj)
+            }
+        };
+
+        const jwtSecret = process.env.JWT_SECRET;        
+
+        jwt.sign(         //pass payL, secret, expiration, inside callbk we will get either err or token
+            payload, 
+            jwtSecret, 
+            { expiresIn: 36000},
+            (err, token) => {
+                if(err) throw err;
+                res.json({ token });
+            });
+        } catch(err) {
         console.log(err.message);
         res.status(500).send('Server error');
        }
