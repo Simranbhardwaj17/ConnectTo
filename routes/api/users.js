@@ -3,12 +3,12 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config(); // Load environment variables
 const { check, validationResult } = require('express-validator');
 //check,.. comes from  ..        read doc exp-validator
 
 const User = require('../../models/User');        //gonna up two levels into models
 
+//This entire route is to register a user
 // @route     POST api/users
 // @desc      Register user
 // @access    Public                     @access value whether pub or pvt
