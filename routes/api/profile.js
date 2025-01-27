@@ -127,7 +127,7 @@ router.get('/', async (req, res) => {
 // @desc     Get profile by user ID     (not profile_id)
 // @access   Public
 router.get(
-  '/user/:user_id',                //end pt is user/userid
+  '/user/:user_id',                
   checkObjectId('user_id'),        //check valid userID
   async ({ params: { user_id } }, res) => {
     try {
@@ -144,6 +144,24 @@ router.get(
     }
   }
 );
+
+// @route    DELETE api/profile
+// @desc     Delete profile, user & posts
+// @access   Private
+// Coz of private, so we have access to the token which we actually have to add in here the auth middleware.
+router.delete('/', auth, async (req, res) => {
+  try {
+    await Promise.all([               //We don't need to get anything. So we don't need a variable here.
+      Profile.findOneAndDelete({ user: req.user.id }),    // Remove profile(Pass user, which is the object ID and we can match that to the request user ID.)
+      User.findOneAndDelete({ _id: req.user.id })         // Remove user(use underscore ID and match request dot user id. So this will remove the user.)
+    ]);
+
+    res.json({ msg: 'User deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 //export router
 module.exports = router;
