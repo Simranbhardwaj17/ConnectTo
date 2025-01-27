@@ -163,5 +163,36 @@ router.delete('/', auth, async (req, res) => {
   }
 });
 
+// @route    PUT api/profile/experience        coz u will update it
+// @desc     Add profile experience
+// @access   Private
+router.put(
+  '/experience',
+  auth,
+  check('title', 'Title is required').notEmpty(),
+  check('company', 'Company is required').notEmpty(),
+  check('from', 'From date is required and needs to be from the past')
+    .notEmpty()
+    .custom((value, { req }) => (req.body.to ? value < req.body.to : true)),
+  async (req, res) => {
+    const errors = validationResult(req);               //check for errors, create an errors variable and set that to validation results, pass in requests.
+    if (!errors.isEmpty()) {                            //check any errors by saying, if not, errors.isEmpty, then we want to return a response or a status of 400. And let's add in json. & do errors.
+      return res.status(400).json({ errors: errors.array() });  // Set that to our errors object, which has a method called array, which will get us that array of errors.
+    }
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+      profile.experience.unshift(req.body);
+      await profile.save();
+
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+
 //export router
 module.exports = router;
