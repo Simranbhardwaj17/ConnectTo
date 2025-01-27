@@ -5,6 +5,7 @@ const { check, validationResult } = require('express-validator');
 // bring in normalize to give us a proper url, regardless of what user entered
 const normalize = require('normalize-url');
 // import normalizeUrl from 'normalize-url';     //for new-version, use import
+const checkObjectId = require('../../middleware/checkObjectId');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
@@ -110,13 +111,39 @@ router.post( '/', [
 // @access   Public
 router.get('/', async (req, res) => {
   try {
-      const profiles = await Profile.find().populate('user', ['name', 'avatar']);
-      res.json(profiles);
+     //create a variable called profiles, and get those by saying await using Profile model, use the find method.
+     // Now, add the name and the avatar, which are part of the user model. So add on to this populate
+     // And we wanna populate from the user collection, and we want an array of fields that we wanna add, which are gonna be the name and the avatar.
+     // then we just wanna do a res.json and we're gonna send along those profiles that we get.
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+    res.json(profiles);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
+
+// @route    GET api/profile/user/:user_id
+// @desc     Get profile by user ID     (not profile_id)
+// @access   Public
+router.get(
+  '/user/:user_id',                //end pt is user/userid
+  checkObjectId('user_id'),        //check valid userID
+  async ({ params: { user_id } }, res) => {
+    try {
+      const profile = await Profile.findOne({
+        user: user_id
+      }).populate('user', ['name', 'avatar']);
+
+      if (!profile) return res.status(400).json({ msg: 'Profile not found' });
+
+      return res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({ msg: 'Server error' });
+    }
+  }
+);
 
 //export router
 module.exports = router;
