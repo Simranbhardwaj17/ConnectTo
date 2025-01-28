@@ -39,5 +39,18 @@ router.post(
   }
 );
 
+// @route    GET api/posts
+// @desc     Get all posts
+// @access   Private      you have to be logged in to even see the post. These profiles are public, but posts are not. That's one of the main reasons for getting people to sign up, is to communicate with other developers.
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 });      //sort by date(most recent 1st)
+    res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 //export router
-module.exports = router
+module.exports = router;
