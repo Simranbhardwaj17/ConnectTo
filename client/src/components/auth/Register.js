@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = ({ setAlert, register, isAuthenticated }) => {
   const [formData, setFormData] = useState({     //useState hook(state, fn) //great about the useState hook is, I can just access the state from anywhere. I don't have to pass it in or anything like that. It's just available from this right here and I can just simply update it by calling set form data or set whatever the state is.
@@ -23,10 +24,38 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
     if (password !== password2) {         // So let's say if password is not equal to password2, then I'm just gonna do a console log for now. Ultimately we'll have an alert, but that's later on. So right now we're just gonna say passwords do not match else. Then let's console.log formData, Okay? Cause we have access to that state directly.
       console.log('Passwords do not match');
     } else {
-      console.log(formData);
+      const newUser = {
+        name,
+        email,
+        password
+      }
+
+      // we're gonna want to have a redux action to,
+
+      // to make a request to the back end.
+
+      // But I'm just gonna do it here before we even implement
+
+      // Redux just to test it out.
+
+      // So let's, let's bring in Axios.
+      try {
+        const config = {   //create config obj
+          headers: {       //header obj
+            'Content-Type': 'application/json'
+          }
+        }
+
+        const body = JSON.stringify(newUser);
+
+        const res = await axios.post('api/users', body, config);
+        console.log(res.data);
+      } catch(err) {
+        console.error(err.response.data);
+      }
     }
   };
-
+  
   return (
     <section className="container">
       <h1 className="large text-primary">Sign Up</h1>
@@ -84,16 +113,3 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
 };
 
 export default Register;
- // we're gonna want to register our user
-  
-  // through a redux action.
-  
-  // However, we haven't implemented Redux yet.
-  
-  // So I guess we could just try it without Redux
-  
-  // for us just to make sure we can actually make a request
-  
-  // to the back end and stuff like that.
-  
-  // So let's actually do that in the next video.
