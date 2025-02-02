@@ -17,24 +17,8 @@ function alertReducer(state = initialState, action) {
 
 export default alertReducer;
 
-
-
-
-
-
-
-
-
-// in alert js
-
-// this is gonna be our reducer, which is gonna
-
-// it's just a function that takes in a piece of state, okay?
+// it's just a function that takes in a piece of state
 
 // Any state that has to do with alerts and an action.
 
-// Okay? An action is gonna get dispatched from an actions file
-
-// which is a little weird
-
-// but I'll try to explain it as we move along.
+// An action is gonna get dispatched from an actions file

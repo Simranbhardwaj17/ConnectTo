@@ -10,3 +10,7 @@ export const setAlert = (msg, alertType, timeout = 5000) => dispatch => {   //co
 
   setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), timeout);
 };
+
+//ex of calling this action(in Reg.js)
+//line: 27 of Register.js do: pass msg here(4) then generate id(5) & dispatch set alert with that msg, alertType & id 
+//Alert system setup done(& interaction between actions and reducers)

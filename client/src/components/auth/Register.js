@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';   //also export connect()    brought it, to work with redux
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { setAlert } from '../../actions/alert';        //we want to bring that action in setAlert here
+import PropTypes from 'prop-types';
 
-const Register = ({ setAlert, register, isAuthenticated }) => {
+const Register = ({ setAlert }) => {        //setAlert is avail in props, so destructure it & pill out of props to use it
   const [formData, setFormData] = useState({     //useState hook(state, fn) //great about the useState hook is, I can just access the state from anywhere. I don't have to pass it in or anything like that. It's just available from this right here and I can just simply update it by calling set form data or set whatever the state is.
     //these r initial states
     name: '',
@@ -21,38 +23,33 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();               // use curly braces here, we need to preventDefault since it's a submit, preventDefault.
-    if (password !== password2) {         // So let's say if password is not equal to password2, then I'm just gonna do a console log for now. Ultimately we'll have an alert, but that's later on. So right now we're just gonna say passwords do not match else. Then let's console.log formData, Okay? Cause we have access to that state directly.
-      console.log('Passwords do not match');
+    if (password !== password2) {         // So let's say if password is not equal to password2, then I'm just gonna do a console log for now. Ultimately we'll have an alert, but that's later on. So right now we're just gonna say passwords do not match else. Then let's console.log formData, Cause we have access to that state directly.
+      //sent msg & alertType, it go to actions/alert file then reducer/alert
+      setAlert('Passwords do not match', 'danger');       //call it when '..'      alertType: 'danger' for css(change bg color a/c to success, danger,..)
     } else {
-      const newUser = {
-        name,
-        email,
-        password
-      }
+      console.log("SUCCESS")
 
-      // we're gonna want to have a redux action to,
+      // we're not gonna keep this code because this is gonna happen within a Redux action. I don't want this to happen within the component but I just wanted to give you an example of actually making a request.
+      // const newUser = {
+      //   name,
+      //   email,
+      //   password
+      // }
 
-      // to make a request to the back end.
+      // try {
+      //   const config = {   //create config obj
+      //     headers: {       //header obj
+      //       'Content-Type': 'application/json'
+      //     }
+      //   }
 
-      // But I'm just gonna do it here before we even implement
+      //   const body = JSON.stringify(newUser);
 
-      // Redux just to test it out.
-
-      // So let's, let's bring in Axios.
-      try {
-        const config = {   //create config obj
-          headers: {       //header obj
-            'Content-Type': 'application/json'
-          }
-        }
-
-        const body = JSON.stringify(newUser);
-
-        const res = await axios.post('api/users', body, config);
-        console.log(res.data);
-      } catch(err) {
-        console.error(err.response.data);
-      }
+      //   const res = await axios.post('api/users', body, config);    req to proxy 
+      //   console.log(res.data);
+      // } catch(err) {
+      //   console.error(err.response.data);
+      // }
     }
   };
   
@@ -112,4 +109,15 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
   );
 };
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
+};
+
+//Here, we don't have any mapStateToProps(state), so use null
+export default connect(null, { setAlert })(Register);   //name of component is also in ()          export connect & add setAlert in order to use it
+//1:57 whenever u bring in action(like setAlert), when u want to use it,u have to pass it in to connect. 
+// connect takes 2 things:-
+//1st any state that u want to map
+//2nd is action
