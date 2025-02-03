@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';   //also export connect()    brought it, to work with redux
 import { Link } from 'react-router-dom';
 import { setAlert } from '../../actions/alert';        //we want to bring that action in setAlert here
+import { register } from '../../actions/auth';
 import PropTypes from 'prop-types';
 
-const Register = ({ setAlert }) => {        //setAlert is avail in props, so destructure it & pill out of props to use it
+const Register = ({ setAlert, register }) => {        //setAlert is avail in props, so destructure it & pill out of props to use it
   const [formData, setFormData] = useState({     //useState hook(state, fn) //great about the useState hook is, I can just access the state from anywhere. I don't have to pass it in or anything like that. It's just available from this right here and I can just simply update it by calling set form data or set whatever the state is.
     //these r initial states
     name: '',
@@ -27,7 +28,7 @@ const Register = ({ setAlert }) => {        //setAlert is avail in props, so des
       //sent msg & alertType, it go to actions/alert file then reducer/alert
       setAlert('Passwords do not match', 'danger');       //call it when '..'      alertType: 'danger' for css(change bg color a/c to success, danger,..)
     } else {
-      console.log("SUCCESS")
+      register({ name, email, password });
 
       // we're not gonna keep this code because this is gonna happen within a Redux action. I don't want this to happen within the component but I just wanted to give you an example of actually making a request.
       // const newUser = {
@@ -111,12 +112,11 @@ const Register = ({ setAlert }) => {        //setAlert is avail in props, so des
 
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
+  register: PropTypes.func.isRequired
 };
 
 //Here, we don't have any mapStateToProps(state), so use null
-export default connect(null, { setAlert })(Register);   //name of component is also in ()          export connect & add setAlert in order to use it
+export default connect(null, { setAlert, register })(Register);   //name of component is also in ()          export connect & add setAlert in order to use it
 //1:57 whenever u bring in action(like setAlert), when u want to use it,u have to pass it in to connect. 
 // connect takes 2 things:-
 //1st any state that u want to map
