@@ -1,6 +1,8 @@
 import {
   REGISTER_SUCCESS,
-  REGISTER_FAIL
+  REGISTER_FAIL,
+  USER_LOADED,
+  AUTH_ERROR
 } from '../actions/types';
 
 const initialState = {     //It will gonna have obj
@@ -15,6 +17,13 @@ function authReducer (state = initialState, action) {
   const { type, payload } = action;  //destructure
 
   switch (type) { 
+    case USER_LOADED:
+      return {
+        ...state,
+        isAuthenticated: true,  // it means user token worked, we were now loggedin. So set loading to F
+        loading: false,
+        user: payload    // cause payload includes user includes everything except password coz of -password in bE
+      }
     case REGISTER_SUCCESS:
       localStorage.setItem('token', payload.token);
       return {
@@ -24,7 +33,8 @@ function authReducer (state = initialState, action) {
         loading: false  //coz we get the res & it's been loaded
       };
     case REGISTER_FAIL:
-      localStorage.removeItem('token');
+    case AUTH_ERROR:   //do same thimg as reg_fail(remove token, clear all off the state)
+      localStorage.removeItem('token');   //clear token from ls, we don't want token that is not valid
       return {
         ...state,
         token: null,
